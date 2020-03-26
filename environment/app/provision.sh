@@ -27,35 +27,29 @@ sudo cp /home/ubuntu/environment/nginx.default /etc/nginx/sites-available/defaul
 # finally, restart the nginx service so the new config takes hold
 sudo service nginx restart
 
-# install Java
-sudo apt-get install openjdk-8-jdk openjdk-8-jre -y
+echo "Adding apt-keys"
+wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+echo deb http://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list
 
+echo "Updating apt-get"
+sudo apt-get -qq update
 
+echo "Installing default-java"
+sudo apt-get -y install default-jre > /dev/null 2>&1
+sudo apt-get -y install default-jdk > /dev/null 2>&1
 
+echo "Installing git"
+sudo apt-get -y install git > /dev/null 2>&1
 
+echo "Installing git-ftp"
+sudo apt-get -y install git-ftp > /dev/null 2>&1
 
-# sort out env variables
-cd /etc
-sudo chmod 777 environment
-cat >> /etc/environment <<EOL
-JAVA_HOME= /usr/lib/jvm/java-8-openjdk-amd64
-JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
-EOL
-sudo chmod 644 environment
+echo "Installing jenkins"
+sudo apt-get -y install jenkins > /dev/null 2>&1
+sudo service jenkins start
 
+sleep 1m
 
-
-
-
-# Install jenkins
-wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
-sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-sudo apt-get update -y
-sudo apt-get install jenkins -y
-
-
-
-
-
-# print admin password
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+echo "Installing Jenkins Plugins"
+JENKINSPWD=$(sudo cat /var/lib/jenkins/secrets/initialAdminPassword)
+echo $JENKINSPWD
